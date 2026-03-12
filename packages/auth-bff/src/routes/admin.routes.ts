@@ -42,9 +42,9 @@ const updateUserSchema = z.object({
 
 function getClientIp(req: Request): string {
   return (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
-         req.ip ||
-         req.connection.remoteAddress ||
-         'unknown';
+    req.ip ||
+    req.connection.remoteAddress ||
+    'unknown';
 }
 
 function getUserAgent(req: Request): string {
@@ -57,9 +57,9 @@ function getUserAgent(req: Request): string {
 // 1. Tenant resolution
 // 2. Authentication
 // 3. Admin or Operator role
+router.use(authenticate);
 router.use(tenantResolver);
 router.use(requireTenant);
-router.use(authenticate);
 router.use(requireRole('admin', 'operator'));
 router.use(adminRateLimiter);
 

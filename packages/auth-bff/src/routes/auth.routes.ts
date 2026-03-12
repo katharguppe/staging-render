@@ -6,19 +6,20 @@
 
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
+import * as crypto from 'crypto';
 import { prisma } from '../db/prisma';
 import { hashPassword, verifyPassword, validatePasswordPolicy } from '../services/password.service';
-import { 
-  generateTokenPair, 
-  rotateRefreshToken, 
-  revokeRefreshToken, 
+import {
+  generateTokenPair,
+  rotateRefreshToken,
+  revokeRefreshToken,
   revokeAllUserTokens,
-  validateAccessToken 
+  validateAccessToken
 } from '../services/token.service';
-import { 
-  logLoginSuccess, 
-  logLoginFail, 
-  logLogout, 
+import {
+  logLoginSuccess,
+  logLoginFail,
+  logLogout,
   logTokenRefresh,
   logPasswordResetRequest,
   logPasswordResetComplete,
@@ -66,9 +67,9 @@ const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
 
 function getClientIp(req: Request): string {
   return (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
-         req.ip ||
-         req.connection.remoteAddress ||
-         'unknown';
+    req.ip ||
+    req.connection.remoteAddress ||
+    'unknown';
 }
 
 function getUserAgent(req: Request): string {
