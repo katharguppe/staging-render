@@ -1,49 +1,84 @@
-# SaaS Auth (Staging Environment)
+# SaaS Auth Staging Setup
 
-This is the staging environment copy of the **SaaS Multi-Tenant Authentication** project. It is set up as a standalone deployable package.
+🛑 **STOP! Read this carefully before doing anything else.** 🛑
 
-## Requirements
+You **must** clone this repository. **DO NOT** use the main components repository. 
 
-- Node.js 20+
-- npm 10+
-- Docker Desktop (for Postgres and Mailhog)
+Follow these steps exactly in order. Do not skip any step.
 
-## Quick Start
+## Step 1: Clone the Staging Repository
 
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+Open your terminal or command prompt and run exactly this command:
 
-2. **Start Infrastructure (DB & Email)**
-   ```bash
-   npm run docker:up
-   ```
+```bash
+git clone https://github.com/katharguppe/staging.git
+```
 
-3. **Database Setup**
-   ```bash
-   npm run db:migrate
-   npm run db:seed
-   ```
+This will create a `staging` folder. 
 
-4. **Start Backend Service (Port 3001)**
-   ```bash
-   cd packages/auth-bff
-   npm run dev
-   ```
+## Step 2: Navigate into the folder
 
-5. **Start Frontend Login UI (Port 5173)**
-   ```bash
-   cd packages/login-ui
-   npm run dev
-   ```
+```bash
+cd staging
+```
 
-## Default Test Accounts
+## Step 3: Install Dependencies
+
+```bash
+npm install
+```
+
+## Step 4: Start the Infrastructure
+
+You must have **Docker Desktop** running on your computer first! Open Docker Desktop, wait for it to fully start, and then run:
+
+```bash
+npm run docker:up
+```
+
+## Step 5: Setup the Database
+
+Run these two commands one after the other:
+
+```bash
+npm run db:migrate
+npm run db:seed
+```
+
+## Step 6: Start the Backend API
+
+Run these commands to start the backend server:
+
+```bash
+cd packages/auth-bff
+npm run dev
+```
+
+🛑 **LEAVE THIS TERMINAL WINDOW OPEN AND RUNNING.** Do not close it. 🛑
+
+## Step 7: Start the Frontend UI
+
+Open a **BRAND NEW** terminal window. Navigate to the folder where you cloned the repo (e.g. `cd staging`). Then run:
+
+```bash
+cd packages/login-ui
+npm run dev
+```
+
+The UI is now available at: **http://localhost:5173**
+
+---
+
+## 🔑 Test Accounts Available
+
+Use these accounts to test the login screen:
 
 | Role | Email | Password | Tenant |
 |------|-------|----------|--------|
-| **Operator** | operator@yoursaas.com | Operator@Secure123! | system |
 | **Admin** | admin@acme.com | Admin@Acme123! | acme-corp |
 | **User** | alice@acme.com | User@Acme123! | acme-corp |
-
-*See original repo documentation for full test account list and API tests.*
+| **User** | bob@acme.com | User@Acme123! | acme-corp |
+| **Disabled** | disabled@acme.com | User@Acme123! | acme-corp |
+| **Operator** | operator@yoursaas.com | Operator@Secure123! | system |
+| **Admin** | admin@betaorg.com | Admin@Beta123! | beta-org |
+| **User** | carol@betaorg.com | User@Beta123! | beta-org |
