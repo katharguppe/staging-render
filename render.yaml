@@ -1,0 +1,59 @@
+services:
+  - type: web
+    name: saas-auth-backend
+    env: node
+    region: oregon
+    plan: free
+    rootDir: packages/auth-bff
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        fromDatabase:
+          name: saas-auth-db
+          property: connectionString
+      - key: JWT_PRIVATE_KEY_PATH
+        value: /etc/secrets/private.pem
+      - key: JWT_PUBLIC_KEY_PATH
+        value: /etc/secrets/public.pem
+      - key: JWT_ISSUER
+        sync: false
+      - key: JWT_AUDIENCE
+        value: saas-platform
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: EMAIL_PROVIDER
+        value: smtp
+      - key: SMTP_HOST
+        value: localhost
+      - key: SMTP_PORT
+        value: 1025
+      - key: SMTP_FROM
+        value: noreply@yoursaas.com
+      - key: OPERATOR_EMAIL
+        value: operator@yoursaas.com
+      - key: OPERATOR_PASSWORD
+        sync: false
+
+  - type: web
+    name: saas-auth-frontend
+    env: static
+    plan: free
+    rootDir: packages/login-ui
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+
+databases:
+  - name: saas-auth-db
+    databaseName: authdb
+    user: authuser
+    plan: free
+    region: oregon
