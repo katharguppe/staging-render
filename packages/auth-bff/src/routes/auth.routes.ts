@@ -397,7 +397,7 @@ router.post('/reset-password', async (req: Request, res: Response) => {
       .update(token)
       .digest('hex');
 
-    // @ts-ignore - Prisma types generated at build time
+    // @ts-expect-error - Prisma types generated at build time
     const resetToken = await prisma.passwordResetToken.findUnique({
       where: { tokenHash },
       include: { user: true },
