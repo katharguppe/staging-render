@@ -47,7 +47,7 @@ export async function logAuditEvent(event: AuditEventInput): Promise<void> {
       eventType: event.eventType,
       ipAddress: event.ipAddress,
       userAgent: event.userAgent,
-      metadata: event.metadata || null,
+      metadata: event.metadata ? (event.metadata as any) : null,
     },
   });
 }

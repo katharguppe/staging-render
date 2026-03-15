@@ -399,7 +399,7 @@ router.post('/reset-password', async (req: Request, res: Response) => {
 
     const resetToken = await prisma.passwordResetToken.findUnique({
       where: { tokenHash },
-      include: { user: true },
+      include: { user: true } as any,
     });
 
     if (!resetToken || resetToken.usedAt || resetToken.expiresAt < new Date()) {
@@ -421,24 +421,24 @@ router.post('/reset-password', async (req: Request, res: Response) => {
           failedAttempts: 0,
           lockedUntil: null,
         },
-      }),
+      } as any),
       prisma.passwordResetToken.update({
         where: { id: resetToken.id },
         data: { usedAt: new Date() },
-      }),
+      } as any),
       prisma.passwordHistory.create({
         data: {
           userId: resetToken.userId,
-          passwordHash: resetToken.user.passwordHash,
+          passwordHash: (resetToken as any).user.passwordHash,
         },
-      }),
+      } as any),
     ]);
 
     // Revoke all refresh tokens
     await revokeAllUserTokens(resetToken.userId);
 
     await logPasswordResetComplete(
-      resetToken.user.tenantId,
+      (resetToken as any).user.tenantId,
       resetToken.userId,
       ipAddress,
       userAgent
