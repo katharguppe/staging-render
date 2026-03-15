@@ -1,0 +1,16 @@
+node_modules
+dist
+.env
+.env.local
+.env.render
+*.log
+coverage
+.git
+.gitignore
+keys/
+docker-compose.yml
+verify-checkpoint-02.js
+run_all_tests.js
+test-results*.md
+checkpoint.md
+tasks-remaining.md
