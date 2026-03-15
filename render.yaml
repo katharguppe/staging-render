@@ -3,7 +3,7 @@ services:
     name: saas-auth-backend
     env: node
     region: oregon
-    plan: free
+    plan: starter
     rootDir: packages/auth-bff
     buildCommand: npm install && npm run build
     startCommand: npm run start
@@ -43,7 +43,7 @@ services:
   - type: web
     name: saas-auth-frontend
     env: static
-    plan: free
+    plan: starter
     rootDir: packages/login-ui
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
