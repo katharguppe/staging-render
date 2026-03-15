@@ -43,7 +43,6 @@ services:
   - type: web
     name: saas-auth-frontend
     env: static
-    region: oregon
     plan: free
     rootDir: packages/login-ui
     buildCommand: npm install && npm run build
