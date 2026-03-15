@@ -23,7 +23,7 @@
   - ⚠️ **Keep this file secure - contains database password!**
 
 ### Pending ⬜
-1. Backend Web Service deployment
+1. Backend Web Service deployment (Step 19)
 2. Frontend Static Site deployment
 3. Environment variables configuration
 4. JWT secrets configuration
@@ -42,7 +42,45 @@ Read this checkpoint to understand current state.
 3. Click "Connect" to get the **Internal Database URL**
 
 ### Step 3: Continue from Step 19
-Follow the instructions in `TASKS.md` starting from **Task 3.4: Deploy Backend Web Service**
+Deploy Backend Web Service (see instructions below)
+
+---
+
+## Next Step: Step 19 - Deploy Backend Web Service
+
+1. Go to: https://dashboard.render.com/web
+2. Click **"New +"** → **"Web Service"**
+3. Connect repository: `katharguppe/staging-render`
+4. Configure:
+   - **Name:** `saas-auth-backend`
+   - **Region:** Oregon (same as database)
+   - **Branch:** `master`
+   - **Root Directory:** `packages/auth-bff`
+   - **Build Command:** `npm install && npm run build`
+   - **Start Command:** `npm run start`
+   - **Plan:** Choose free/starter option available
+
+5. Add Environment Variables:
+   ```
+   NODE_ENV=production
+   PORT=3001
+   DATABASE_URL=<paste Internal Database URL from render-credentials.txt>
+   JWT_PRIVATE_KEY_PATH=/etc/secrets/private.pem
+   JWT_PUBLIC_KEY_PATH=/etc/secrets/public.pem
+   JWT_ISSUER=https://<will-get-after-deploy>
+   JWT_AUDIENCE=saas-platform
+   CORS_ALLOWED_ORIGINS=*
+   EMAIL_PROVIDER=smtp
+   SMTP_HOST=localhost
+   SMTP_PORT=1025
+   SMTP_FROM=noreply@yoursaas.com
+   OPERATOR_EMAIL=operator@yoursaas.com
+   OPERATOR_PASSWORD=Operator@Secure123!
+   ```
+
+6. Click **"Create Web Service"**
+7. Wait for deployment
+8. Copy the service URL for next steps
 
 ---
 
