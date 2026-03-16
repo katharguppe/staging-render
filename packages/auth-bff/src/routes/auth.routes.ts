@@ -7,7 +7,7 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import * as crypto from 'crypto';
-import { prisma } from '../db/prisma';
+import { prisma, setTenantContext, clearTenantContext } from '../db/prisma';
 import { hashPassword, verifyPassword, validatePasswordPolicy } from '../services/password.service';
 import {
   generateTokenPair,
@@ -463,10 +463,16 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
   try {
     const user = req.user!;
 
+    // Set tenant context for RLS
+    await setTenantContext(user.tid);
+
     const dbUser = await prisma.user.findUnique({
       where: { id: user.sub },
       include: { tenant: true },
     });
+
+    // Clear tenant context after query
+    await clearTenantContext();
 
     if (!dbUser) {
       return res.status(404).json({
@@ -490,6 +496,8 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Get user error:', error);
+    // Clear tenant context on error
+    await clearTenantContext();
     return res.status(500).json({
       code: 'INTERNAL_ERROR',
       message: 'An unexpected error occurred',

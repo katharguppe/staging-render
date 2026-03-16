@@ -63,6 +63,38 @@ router.use(requireTenant);
 router.use(requireRole('admin', 'operator'));
 router.use(adminRateLimiter);
 
+/**
+ * Middleware to ensure user's tenant matches the resolved tenant
+ * Prevents cross-tenant access attacks
+ */
+function requireSameTenant(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  const user = req.user!;
+  const tenant = req.tenant!;
+
+  // Operators can access any tenant (global scope)
+  if (user.role === 'operator') {
+    return next();
+  }
+
+  // Admin users must be in the same tenant
+  if (user.tid !== tenant.id) {
+    res.status(403).json({
+      code: 'FORBIDDEN',
+      message: 'You do not have access to this tenant',
+    });
+    return;
+  }
+
+  next();
+}
+
+// Apply same-tenant check to all admin routes
+router.use(requireSameTenant);
+
 // ─── GET /admin/users ───────────────────────────────────────────────────────
 
 router.get('/users', async (req: Request, res: Response) => {
