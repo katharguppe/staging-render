@@ -42,15 +42,9 @@ function getPrivateKey(): string {
     return privateKey;
   }
 
-  // First, try to load from environment variable (Render secrets)
-  const envPrivateKey = process.env.JWT_PRIVATE_KEY;
-  if (envPrivateKey) {
-    privateKey = envPrivateKey;
-    return privateKey;
-  }
-
   const config = getConfig();
-  // Try multiple paths for the key
+  
+  // Try multiple paths for the key (local development)
   const possiblePaths = [
     path.resolve(process.cwd(), config.jwt.privateKeyPath),
     path.resolve(process.cwd(), '..', config.jwt.privateKeyPath),
@@ -64,7 +58,21 @@ function getPrivateKey(): string {
     }
   }
 
-  throw new Error(`Private key not found. Tried: ${possiblePaths.join(', ')}`);
+  // Try Render secrets path
+  const renderSecretsPath = '/etc/secrets/private.pem';
+  if (fs.existsSync(renderSecretsPath)) {
+    privateKey = fs.readFileSync(renderSecretsPath, 'utf8');
+    return privateKey;
+  }
+
+  // Finally, try to load from environment variable (content, not path)
+  const envPrivateKey = process.env.JWT_PRIVATE_KEY;
+  if (envPrivateKey && envPrivateKey.includes('-----BEGIN')) {
+    privateKey = envPrivateKey;
+    return privateKey;
+  }
+
+  throw new Error(`Private key not found. Tried: ${[...possiblePaths, renderSecretsPath].join(', ')}`);
 }
 
 /**
@@ -75,15 +83,9 @@ export function getPublicKey(): string {
     return publicKey;
   }
 
-  // First, try to load from environment variable (Render secrets)
-  const envPublicKey = process.env.JWT_PUBLIC_KEY;
-  if (envPublicKey) {
-    publicKey = envPublicKey;
-    return publicKey;
-  }
-
   const config = getConfig();
-  // Try multiple paths for the key
+  
+  // Try multiple paths for the key (local development)
   const possiblePaths = [
     path.resolve(process.cwd(), config.jwt.publicKeyPath),
     path.resolve(process.cwd(), '..', config.jwt.publicKeyPath),
@@ -97,7 +99,21 @@ export function getPublicKey(): string {
     }
   }
 
-  throw new Error(`Public key not found. Tried: ${possiblePaths.join(', ')}`);
+  // Try Render secrets path
+  const renderSecretsPath = '/etc/secrets/public.pem';
+  if (fs.existsSync(renderSecretsPath)) {
+    publicKey = fs.readFileSync(renderSecretsPath, 'utf8');
+    return publicKey;
+  }
+
+  // Finally, try to load from environment variable (content, not path)
+  const envPublicKey = process.env.JWT_PUBLIC_KEY;
+  if (envPublicKey && envPublicKey.includes('-----BEGIN')) {
+    publicKey = envPublicKey;
+    return publicKey;
+  }
+
+  throw new Error(`Public key not found. Tried: ${[...possiblePaths, renderSecretsPath].join(', ')}`);
 }
 
 /**

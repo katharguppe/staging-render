@@ -17,6 +17,10 @@ services:
         fromDatabase:
           name: saas-auth-db
           property: connectionString
+      - key: JWT_PRIVATE_KEY_PATH
+        value: /etc/secrets/private.pem
+      - key: JWT_PUBLIC_KEY_PATH
+        value: /etc/secrets/public.pem
       - key: JWT_ISSUER
         sync: false
       - key: JWT_AUDIENCE
