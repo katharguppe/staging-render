@@ -125,7 +125,7 @@ export function getPublicKey(): string {
     return publicKey;
   }
 
-  throw new Error(`Public key not found. Tried: ${[...possiblePaths, renderSecretsPath].join(', ')}`);
+  throw new Error(`Public key not found. Tried: ${[...possiblePaths, ...renderSecretsPaths].join(', ')}`);
 }
 
 /**
