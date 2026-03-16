@@ -4,7 +4,7 @@
  * Architecture Spec Section 5
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma';
 import { hashPassword, validatePasswordPolicy } from '../services/password.service';
