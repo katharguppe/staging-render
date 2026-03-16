@@ -53,9 +53,58 @@
   - ⚠️ **Keep this file secure - contains database password!**
 
 ### Pending ⬜ (Next Steps)
-1. **Redeploy Frontend** - Trigger new build on Render (code pushed)
-2. **Verify Frontend** - Check that login UI loads
-3. **Test Login Flow** - Verify authentication works end-to-end
+1. **Seed Database on Render** - Run Prisma seed to create test accounts (see below)
+2. **Redeploy Backend** - Trigger new build with preDeployCommand for migrations
+3. **Redeploy Frontend** - Trigger new build on Render (code pushed)
+4. **Test Login Flow** - Verify authentication works end-to-end
+
+---
+
+## 🗄️ Database Seeding (IMPORTANT!)
+
+The Render database is empty. You need to seed it with test accounts.
+
+### Option A: Seed via Render Dashboard (Recommended)
+
+1. **Go to:** https://dashboard.render.com
+2. **Click on:** `saas-auth-backend` → "Shell" tab
+3. **Wait** for shell to connect
+4. **Run these commands:**
+   ```bash
+   cd /opt/render/project/src
+   npm run db:seed
+   ```
+5. **Wait** for seed to complete (~10 seconds)
+6. **Verify** by checking logs for "✓ Created tenant: Acme Corp"
+
+### Option B: Seed Locally (Alternative)
+
+1. **Get DATABASE_URL** from Render Dashboard:
+   - Go to `saas-auth-db` → "Connections"
+   - Copy the **External** connection string
+   
+2. **Update .env temporarily:**
+   ```bash
+   # In D:\staging-render\packages\auth-bff\.env
+   DATABASE_URL=postgresql://... (paste Render URL)
+   ```
+
+3. **Run seed locally:**
+   ```bash
+   cd packages\auth-bff
+   npm run db:seed
+   ```
+
+4. **Revert .env** after seeding
+
+### Test Accounts After Seeding
+
+| Role | Email | Password | Tenant |
+|------|-------|----------|--------|
+| Operator | operator@yoursaas.com | Operator@Secure123! | system |
+| Admin | admin@acme.com | Admin@Acme123! | acme-corp |
+| User | alice@acme.com | User@Acme123! | acme-corp |
+| Admin | admin@betaorg.com | Admin@Beta123! | beta-org |
 
 ---
 
