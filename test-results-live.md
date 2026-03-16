@@ -1,11 +1,11 @@
 # API Test Results - Live Render Backend
 
-**Date:** 2026-03-16T03:06:52.882Z
+**Date:** 2026-03-16T03:14:19.983Z
 **Backend:** https://saas-auth-backend.onrender.com
 
 ## Summary
-- ✅ Passed: 3
-- ❌ Failed: 19
+- ✅ Passed: 6
+- ❌ Failed: 16
 - 📊 Total: 22
 
 ## Status
@@ -14,12 +14,9 @@
 
 ## Failed Tests
 - Login - Admin (admin@acme.com)
-- Login - Invalid Credentials
 - Login - Regular User (alice@acme.com)
-- Login - Disabled Account
 - Login - Operator
 - Get Current User (with JWT)
-- Forgot Password
 - List Users
 - Create New User
 - Create User - Duplicate Email
