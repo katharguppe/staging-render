@@ -1,13 +1,11 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 const API_BASE_URL = 'http://localhost:3001';
 
 // Global variables to hold state across tests
 let operatorToken = '';
 let adminToken = '';
-let regularUserToken = '';
 let testTenantId = '';
-let adminUserId = '';
 
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const headers = {
@@ -155,8 +153,9 @@ describe('Full CRUD Integration - SaaS Auth API', () => {
   });
 
   describe('User CRUD Operations (Admin Role in acme-corp)', () => {
-    
+
     let testUserId = '';
+    let adminUserId = '';
 
     it('Should list users in tenant', async () => {
       const data = await apiRequest('/admin/users', {

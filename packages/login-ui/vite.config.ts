@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     react(),
     dts({
-      include: ['src'],
+      include: ['src/**/*.ts', 'src/**/*.tsx', '!src/**/__tests__/**'],
       outDir: 'dist/types',
     }),
   ],
