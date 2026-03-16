@@ -58,11 +58,17 @@ function getPrivateKey(): string {
     }
   }
 
-  // Try Render secrets path
-  const renderSecretsPath = '/etc/secrets/private.pem';
-  if (fs.existsSync(renderSecretsPath)) {
-    privateKey = fs.readFileSync(renderSecretsPath, 'utf8');
-    return privateKey;
+  // Try Render secrets paths (both naming conventions)
+  const renderSecretsPaths = [
+    '/etc/secrets/private.pem',      // If JWT_PRIVATE_KEY_PATH is set
+    '/etc/secrets/JWT_PRIVATE_KEY',  // If secret named JWT_PRIVATE_KEY
+  ];
+
+  for (const secretsPath of renderSecretsPaths) {
+    if (fs.existsSync(secretsPath)) {
+      privateKey = fs.readFileSync(secretsPath, 'utf8');
+      return privateKey;
+    }
   }
 
   // Finally, try to load from environment variable (content, not path)
@@ -72,7 +78,7 @@ function getPrivateKey(): string {
     return privateKey;
   }
 
-  throw new Error(`Private key not found. Tried: ${[...possiblePaths, renderSecretsPath].join(', ')}`);
+  throw new Error(`Private key not found. Tried: ${[...possiblePaths, ...renderSecretsPaths].join(', ')}`);
 }
 
 /**
@@ -99,11 +105,17 @@ export function getPublicKey(): string {
     }
   }
 
-  // Try Render secrets path
-  const renderSecretsPath = '/etc/secrets/public.pem';
-  if (fs.existsSync(renderSecretsPath)) {
-    publicKey = fs.readFileSync(renderSecretsPath, 'utf8');
-    return publicKey;
+  // Try Render secrets paths (both naming conventions)
+  const renderSecretsPaths = [
+    '/etc/secrets/public.pem',       // If JWT_PUBLIC_KEY_PATH is set
+    '/etc/secrets/JWT_PUBLIC_KEY',   // If secret named JWT_PUBLIC_KEY
+  ];
+
+  for (const secretsPath of renderSecretsPaths) {
+    if (fs.existsSync(secretsPath)) {
+      publicKey = fs.readFileSync(secretsPath, 'utf8');
+      return publicKey;
+    }
   }
 
   // Finally, try to load from environment variable (content, not path)
