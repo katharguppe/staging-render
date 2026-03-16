@@ -1,8 +1,8 @@
-# 🚀 Render Deployment - Current Status & Startup Instructions
+# 🚀 Render Deployment - Current Status
 
-**Date:** March 16, 2026  
-**Last Action:** JWT Key Loading Fix Pushed  
-**Status:** ⏳ Awaiting JWT Keys Configuration & Redeploy
+**Date:** March 16, 2026
+**Last Action:** Security and RLS fixes committed and pushed
+**Status:** ⏳ Awaiting Backend Redeploy
 
 ---
 
@@ -14,57 +14,34 @@
 | **Frontend Static Site** | ✅ Deployed | https://saas-auth-front.onrender.com |
 | **PostgreSQL Database** | ✅ Seeded | 7 test accounts ready |
 | **Migrations** | ✅ Applied | 2/2 migrations complete |
-| **JWT Keys** | ⚠️ **PENDING** | Need to add as Render secrets |
-| **Code Fix** | ✅ Pushed | token.service.ts updated to read env vars |
+| **JWT Keys** | ✅ Configured | Render secrets loaded correctly |
+| **Code Fixes** | ✅ Pushed | Commit cdd2b92 - security and RLS fixes |
+| **Test Results** | ⏳ Pending | 28/30 passing, 2 fixes awaiting redeploy |
 
 ---
 
 ## 🎯 What You Need to Do (In Order)
 
-### Step 1: Add JWT Keys to Render (5 minutes)
+### Step 1: Redeploy Backend (2-3 minutes)
 
-1. **Open Render Dashboard:**
+The latest fixes have been pushed to GitHub. To apply them:
+
+1. **Go to Render Dashboard:**
    - Go to: https://dashboard.render.com
 
 2. **Select Backend Service:**
    - Click on: `saas-auth-backend`
 
-3. **Go to Environment Tab:**
-   - Click: **"Environment"**
-
-4. **Add JWT Private Key Secret:**
-   - Scroll to **"Secrets"** section
-   - Click **"Add Secret"**
-   - **Key:** `JWT_PRIVATE_KEY`
-   - **Value:** Copy ENTIRE content from `D:\staging-render\keys\private.pem`
-     - Include `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----`
-   - Click **"Save Changes"**
-
-5. **Add JWT Public Key Secret:**
-   - Click **"Add Secret"** again
-   - **Key:** `JWT_PUBLIC_KEY`
-   - **Value:** Copy ENTIRE content from `D:\staging-render\keys\public.pem`
-   - Click **"Save Changes"**
-
-6. **Update Environment Variables:**
-   - Find `JWT_ISSUER` → Set to: `https://saas-auth-backend.onrender.com`
-   - Find `CORS_ALLOWED_ORIGINS` → Set to: `https://saas-auth-front.onrender.com`
-   - Click **"Save Changes"**
-
-### Step 2: Redeploy Backend (2-3 minutes)
-
-1. **Go to Manual Deploy:**
+3. **Trigger Manual Deploy:**
    - Click: **"Manual Deploy"** or **"Deploy"** tab
-
-2. **Trigger Redeploy:**
    - Click: **"Deploy"** or **"Redeploy"**
    - Wait for build to complete
 
-3. **Verify Deployment:**
+4. **Verify Deployment:**
    - Check logs for: "Server listening on port 3001"
    - No JWT-related errors
 
-### Step 3: Test APIs (1 minute)
+### Step 2: Run Tests (1 minute)
 
 Open terminal in `D:\staging-render` and run:
 ```bash
@@ -72,9 +49,23 @@ node test-live-api.js
 ```
 
 **Expected Results:**
-- ✅ ~20 tests passing
-- ✅ Login returns access_token
-- ✅ All admin/operator endpoints work
+- ✅ 30/30 tests passing (100%)
+- ✅ Cross-tenant access blocked (403)
+- ✅ Get Current User works (200)
+
+---
+
+## 🔧 Latest Fixes (Commit cdd2b92)
+
+### Fix 1: Cross-Tenant Access Security
+**Issue:** Admin from one tenant could access another tenant's data
+
+**Solution:** Added `requireSameTenant` middleware to admin routes
+
+### Fix 2: Get Current User (/auth/me) 404 Error
+**Issue:** RLS was blocking tenant relation lookup
+
+**Solution:** Set tenant context before querying user data
 
 ---
 
@@ -87,8 +78,6 @@ node test-live-api.js
 | `test-live-api.js` | API Test Suite | `D:\staging-render\` |
 | `README_UI.md` | UI Developer Guide | `D:\staging-render\` |
 | `BACKEND_TEST_REPORT.md` | Backend Test Report | `D:\staging-render\` |
-| `RENDER_JWT_KEYS_SETUP.md` | Detailed JWT Setup | `D:\staging-render\` |
-| `DEBUG_JWT_KEYS.md` | Troubleshooting Guide | `D:\staging-render\` |
 
 ---
 
@@ -107,61 +96,19 @@ node test-live-api.js
 
 ## 🔍 Verification Checklist
 
-After completing steps above, verify:
+After redeploying, verify:
 
 - [ ] Backend health: https://saas-auth-backend.onrender.com/health
   - Should show: `{"status":"ok","db":"connected",...}`
-
-- [ ] Login works:
-  ```bash
-  curl -X POST https://saas-auth-backend.onrender.com/auth/login \
-    -H "Content-Type: application/json" \
-    -d "{\"email\":\"admin@acme.com\",\"password\":\"Admin@Acme123!\",\"tenant_slug\":\"acme-corp\"}"
-  ```
-  - Should return: `{"access_token":"eyJhbGciOiJSUzI1NiIs...",...}`
 
 - [ ] Full test suite passes:
   ```bash
   node test-live-api.js
   ```
-  - Expected: ~20/22 tests passing
+  - Expected: 30/30 tests passing
 
 - [ ] Frontend loads: https://saas-auth-front.onrender.com
   - Should show login UI
-
----
-
-## 🆘 Troubleshooting
-
-### If Login Still Fails (500 Error)
-
-1. **Check Render Logs:**
-   - Go to `saas-auth-backend` → "Logs" tab
-   - Look for: "Private key not found" or JWT errors
-
-2. **Verify Secrets via Shell:**
-   - Go to `saas-auth-backend` → "Shell" tab
-   - Run:
-     ```bash
-     printenv | grep JWT
-     ls -la /etc/secrets/
-     cat /etc/secrets/private.pem | head -1
-     ```
-
-3. **Check Environment Variables:**
-   - Ensure `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` are set (not just paths)
-   - Ensure `JWT_ISSUER` is set to backend URL
-   - Ensure `CORS_ALLOWED_ORIGINS` includes frontend URL
-
-4. **Redeploy Again:**
-   - Secrets only load on service start
-   - Must redeploy after adding secrets
-
-### If Tests Show 401 Errors
-
-- This is expected if login fails
-- Once login works, all other tests should pass
-- 401 on missing JWT is correct behavior
 
 ---
 
@@ -190,24 +137,27 @@ After completing steps above, verify:
 3. ✅ Created comprehensive UI Developer Guide (`README_UI.md`)
 4. ✅ Created live API test suite (`test-live-api.js`)
 5. ✅ Fixed JWT key loading to support Render secrets
-6. ✅ Pushed all code to GitHub
-7. ⏳ Awaiting JWT key configuration in Render Dashboard
+6. ✅ Fixed cross-tenant access security vulnerability
+7. ✅ Fixed /auth/me endpoint RLS issue
+8. ✅ Pushed all code to GitHub (commit cdd2b92)
 
 ---
 
-## 🎯 Next Steps After JWT Keys
+## 🎯 Next Steps After Redeploy
 
-Once JWT keys are configured and backend is redeployed:
+Once backend is redeployed:
 
 1. **Run Tests:** `node test-live-api.js`
-2. **Verify All Pass:** ~20/22 tests should pass
+2. **Verify All Pass:** 30/30 tests should pass
 3. **Tell UI Team:** Check `README_UI.md` for integration guide
 4. **Frontend Testing:** Test login flow at https://saas-auth-front.onrender.com
 
 ---
 
-**Last Updated:** March 16, 2026  
-**Code Pushed:** ✅ Commit `1b3076f` - "Fix JWT key loading for Render secrets"  
-**Action Required:** Add JWT keys via Render Dashboard, then redeploy
+**Last Commit:** `cdd2b92` - "Fix: Cross-tenant access security and /auth/me RLS issue"
+**Deployment Status:** ⏳ **AWAITING REDEPLOY**
+**Expected Test Pass Rate:** **100% (30/30)**
+
+---
 
 **Jai Jagannath! 🙏**
