@@ -42,6 +42,13 @@ function getPrivateKey(): string {
     return privateKey;
   }
 
+  // First, try to load from environment variable (Render secrets)
+  const envPrivateKey = process.env.JWT_PRIVATE_KEY;
+  if (envPrivateKey) {
+    privateKey = envPrivateKey;
+    return privateKey;
+  }
+
   const config = getConfig();
   // Try multiple paths for the key
   const possiblePaths = [
@@ -65,6 +72,13 @@ function getPrivateKey(): string {
  */
 export function getPublicKey(): string {
   if (publicKey) {
+    return publicKey;
+  }
+
+  // First, try to load from environment variable (Render secrets)
+  const envPublicKey = process.env.JWT_PUBLIC_KEY;
+  if (envPublicKey) {
+    publicKey = envPublicKey;
     return publicKey;
   }
 
