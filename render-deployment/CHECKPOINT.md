@@ -1,7 +1,7 @@
 # Render Deployment Checkpoint
 
 **Date:** March 16, 2026
-**Status:** Backend Web Service LIVE ✅ | Frontend Build Fixed
+**Status:** Backend LIVE ✅ | Frontend Code Pushed - Redeploy Needed
 
 ---
 
@@ -22,7 +22,10 @@
    - **URL:** https://saas-auth-backend.onrender.com
    - **Health:** https://saas-auth-backend.onrender.com/health
    - **Status:** ✅ Running (db: connected)
-6. **Frontend Build Fixed:** Resolved TypeScript errors in login-ui package
+6. **Frontend Static Site:** Deployed but needs redeploy with fixed code
+   - **Name:** `saas-auth-front`
+   - **URL:** https://saas-auth-front.onrender.com
+   - **Status:** ⚠️ Needs redeploy (code was updated)
 
 ### Build Fixes Applied (Backend)
 1. Moved `@types/*` from devDependencies to dependencies
@@ -33,21 +36,26 @@
 
 ### Build Fixes Applied (Frontend) - March 16
 1. Excluded `__tests__` folder from tsconfig.json type checking
-2. Excluded `__tests__` from vite.config.ts dts plugin
-3. Removed unused `beforeAll` import in api-integration.test.ts
-4. Removed unused global variables (`regularUserToken`, `adminUserId`)
-5. Moved `adminUserId` to local scope within describe block
+2. Removed unused imports and variables in api-integration.test.ts
+3. **Converted from library to standalone app** for static site deployment
+4. Updated index.html with production-ready styling
+5. Added VITE_API_URL environment variable support
+6. Added web component import in stub/main.ts for proper bundling
+7. Added vite-env.d.ts for Vite type definitions
+8. Build now produces 164KB bundled app (was failing before)
+
+### JWT Keys Generated ✅
+- RSA keys generated in `/keys` directory
+- Ready to be added as Render secrets
 
 ### Saved Locally
 - **Credentials:** `D:\staging-render\render-credentials.txt`
   - ⚠️ **Keep this file secure - contains database password!**
 
 ### Pending ⬜ (Next Steps)
-1. Frontend Static Site deployment (Step 20)
-2. Environment variables configuration (JWT_ISSUER update)
-3. JWT secrets configuration
-4. CORS configuration for production URLs
-5. Run API tests against live backend
+1. **Redeploy Frontend** - Trigger new build on Render (code pushed)
+2. **Verify Frontend** - Check that login UI loads
+3. **Test Login Flow** - Verify authentication works end-to-end
 
 ---
 
