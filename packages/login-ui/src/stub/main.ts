@@ -4,6 +4,10 @@
  */
 
 import { applyTheme } from '../styles/theme';
+import '../web-component/auth-login';
+
+// Get backend URL from environment variable or use default
+const BFF_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 // Initialize the stub app
 function initStubApp() {
@@ -24,7 +28,7 @@ function initStubApp() {
 
   // Create auth-login element
   const loginElement = document.createElement('auth-login');
-  loginElement.setAttribute('bff_url', 'http://localhost:3001');
+  loginElement.setAttribute('bff_url', BFF_URL);
   loginElement.setAttribute('tenant_slug', 'acme-corp');
   loginElement.setAttribute('redirect_url', '/dashboard');
   
